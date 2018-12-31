@@ -1,0 +1,136 @@
+/*=============================================
+=            SCSS - BREAKPOINTS               =
+=============================================*/
+
+/*=====  1  ======*/
+// html { font-size: 62.5% };   //10px
+// body { font-size: 1.6rem };     //1.6rem = 16px = 1em
+// desktop first
+
+@mixin respond($breakpoint) {
+  @if $breakpoint==phone {
+    @media only screen and (max-width: 22.5em) {
+      @content;
+    }
+    //360px
+  }
+
+  @if $breakpoint==smartphone {
+    @media only screen and (max-width: 36.75em) {
+      @content;
+    }
+    //588px
+  }
+
+  @if $breakpoint==tablet {
+    @media only screen and (max-width: 46.4em) {
+      @content;
+    }
+    //744px
+  }
+
+  @if $breakpoint==tablet-landscape {
+    @media only screen and (max-width: 60em) {
+      @content;
+    }
+    //960px
+  }
+}
+
+/*=====  2  ======*/
+
+@mixin breakpoint($point) {
+  @if $point == desktop {
+    @media (min-width: 70em) {
+      @content;
+    }
+  } @else if $point == laptop {
+    @media (min-width: 64em) {
+      @content;
+    }
+  } @else if $point == tablet {
+    @media (min-width: 50em) {
+      @content;
+    }
+  } @else if $point == phablet {
+    @media (min-width: 37.5em) {
+      @content;
+    }
+  } @else if $point == mobileonly {
+    @media (max-width: 37.5em) {
+      @content;
+    }
+  }
+}
+
+/*=====  3  ======*/
+
+//Define the breakpoints
+$breakpoint-small: 600px;
+$breakpoint-med-small: 960px;
+$breakpoint-med: 1175px;
+
+@mixin screen($size, $type: max, $pixels: $breakpoint-small) {
+  @if $size == 'small' {
+    @media screen and ($type + -width: $breakpoint-small) {
+      @content;
+    }
+  } @else if $size == 'med-small' {
+    @media screen and ($type + -width: $breakpoint-med-small) {
+      @content;
+    }
+  } @else if $size == 'med' {
+    @media screen and ($type + -width: $breakpoint-med) {
+      @content;
+    }
+  } @else if $size == 'large' {
+    @media screen and ($type + -width: $breakpoint-med) {
+      @content;
+    }
+  } @else if $size == 'custom' {
+    @media screen and ($type + -width: $pixels + px) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+// Using the mixin
+.foo {
+  @include screen(large) {
+    width: 20%;
+  }
+
+  @include screen(custom, max, 400) {
+    width: 100%;
+  }
+}
+
+/*=====  4  ======*/
+
+$breakpoints: (
+  'phone': 400px,
+  'phone-wide': 480px,
+  'phablet': 560px,
+  'tablet-small': 640px,
+  'tablet': 768px,
+  'tablet-wide': 1024px,
+  'desktop': 1248px,
+  'desktop-wide': 1440px
+);
+@mixin mq($width, $type: min) {
+  @if map_has_key($breakpoints, $width) {
+    $width: map_get($breakpoints, $width);
+    @if $type == max {
+      $width: $width - 1px;
+    }
+    @media only screen and (#{$type}-width: $width) {
+      @content;
+    }
+  }
+}
+
+// Usage{
+// @include mq('tablet-wide') {
+
+// }

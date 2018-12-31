@@ -1,0 +1,265 @@
+/**
+ *  1.Clearfix
+ *  2.Centering elements
+ *  3.Fullscreen Background Image
+ *  4.Full Width/Height and Centered Image
+ *  5.Visually hide an element
+ *  6.Pseudo element common part
+ *  7.Responsive ratio (img, div etc.)
+ *  8.CSS triangles
+ *  9.Hardware - flicker-free animation
+ *  10.Truncate text
+ *  11.Tooltips
+ */
+
+/*=============================================
+=            1 - CLEARFIX                     =
+=============================================*/
+//1
+@mixin clearfix {
+  &:before,
+  &:after {
+    content: '';
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+  zoom: 1;
+}
+
+//2
+%clearfix {
+  *zoom: 1;
+  &:before,
+  &:after {
+    content: ' ';
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// Usage
+// .container-with-floated-children {
+//   @extend %clearfix;
+// }
+
+/*=============================================
+=            2 - Centering elements           =
+=============================================*/
+// Define vertical, horizontal, or both position
+@mixin center($position) {
+  position: absolute;
+
+  @if $position == 'vertical' {
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  } @else if $position == 'horizontal' {
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translate(-50%);
+  } @else if $position == 'both' {
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/*=============================================
+=     3 - Fullscreen Background Image         =
+=============================================*/
+@mixin bg-cover($url) {
+  background: url($url) no-repeat center center fixed;
+  background-size: cover;
+}
+
+/*=============================================
+= 4 - Full Width/Height and Centered Image    =
+=============================================*/
+// Position an image within it's parent element so that it
+// takes up the full height and width of the parent element, and
+// is positioned with its center in the middle
+
+@mixin img-cover {
+  min-height: 100%;
+  width: 100%;
+  height: auto;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+/*=============================================
+= 5 - Visually hide an element                =
+=============================================*/
+
+%visuallyhidden {
+  margin: -1px;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip: rect(0, 0, 0, 0);
+  position: absolute;
+}
+
+// Usage
+// .visually-hidden {
+//   @extend %visuallyhidden;
+// }
+
+/*=============================================
+=     6 - Pseudo element common part          =
+=============================================*/
+// When using ::before and ::after you'll always need these three, so we're saving two lines of code every time you use this.
+@mixin pseudo($display: block, $pos: absolute, $content: '') {
+  content: $content;
+  display: $display;
+  position: $pos;
+}
+
+// Usage
+// div::after {
+//   @include pseudo;
+// }
+
+/*=============================================
+=     7 - Responsive ratio                    =
+=============================================*/
+// Use this for creating scalable elements (usually images / background images) that maintain a ratio.
+
+@mixin responsive-ratio($x, $y, $pseudo: false) {
+  $padding: unquote(($y / $x) * 100 + '%');
+  @if $pseudo {
+    &:before {
+      @include pseudo($pos: relative);
+      width: 100%;
+      padding-top: $padding;
+    }
+  } @else {
+    padding-top: $padding;
+  }
+}
+
+// Usage
+// div {
+//   @include responsive-ratio(16,9);
+// }
+
+/*=============================================
+=     8 - CSS triangles                       =
+=============================================*/
+@mixin css-triangle(
+  $color,
+  $direction,
+  $size: 6px,
+  $position: absolute,
+  $round: false
+) {
+  @include pseudo($pos: $position);
+  width: 0;
+  height: 0;
+  @if $round {
+    border-radius: 3px;
+  }
+  @if $direction == down {
+    border-left: $size solid transparent;
+    border-right: $size solid transparent;
+    border-top: $size solid $color;
+    margin-top: 0 - round($size / 2.5);
+  } @else if $direction == up {
+    border-left: $size solid transparent;
+    border-right: $size solid transparent;
+    border-bottom: $size solid $color;
+    margin-bottom: 0 - round($size / 2.5);
+  } @else if $direction == right {
+    border-top: $size solid transparent;
+    border-bottom: $size solid transparent;
+    border-left: $size solid $color;
+    margin-right: -$size;
+  } @else if $direction == left {
+    border-top: $size solid transparent;
+    border-bottom: $size solid transparent;
+    border-right: $size solid $color;
+    margin-left: -$size;
+  }
+}
+/* =============================================
+=     9 - Hardware - flicker-free             =
+============================================= */
+// Simple and effective for when you need to trigger hardware acceleration for some animation, keeping everything fast, slick and flicker-free.
+@mixin hardware($backface: true, $perspective: 1000) {
+  @if $backface {
+    backface-visibility: hidden;
+  }
+  perspective: $perspective;
+}
+/* =============================================
+=     10 - Truncate                            =
+============================================= */
+@mixin truncate($truncation-boundary) {
+  max-width: $truncation-boundary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* =============================================
+=     11 - Tooltips                            =
+============================================= */
+@mixin hui_tooltip($content: attr(data-tooltip), $direction: top) {
+  position: relative;
+  &:before,
+  &:after {
+    display: none;
+    z-index: 98;
+  }
+  &:hover {
+    &:after {
+      // for text bubble
+      content: $content;
+      display: block;
+      position: absolute;
+      height: 12px;
+      // (makes total height including padding 22px)
+      padding: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      color: #fff;
+      @include text-shadow(1px 1px #000);
+      background-color: #222;
+    }
+    @if ($direction == 'top') {
+      &:before {
+        @include triangle(down, 6px, #222);
+        top: -6px;
+        margin-top: 0;
+        left: 47%;
+      }
+      &:after {
+        top: -28px;
+        left: 47%;
+        margin-left: -20px;
+      }
+    } @else if ($direction == 'bottom') {
+      &:before {
+        @include triangle(up, 6px, #222);
+        top: auto;
+        margin-top: 0;
+        bottom: -6px;
+        left: 47%;
+      }
+      &:after {
+        bottom: -28px;
+        left: 47%;
+        margin-left: -20px;
+      }
+    }
+  }
+}
